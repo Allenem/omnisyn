@@ -12,7 +12,10 @@ from networks.modules.swinunetr_core import SwinUNETREncoder
 from torch.utils.tensorboard import SummaryWriter
 from loss import ContrastiveLoss
 
-# Dataset
+
+# ==========================
+# 1. Dataset
+# ==========================
 train_dir = "imgs/train/"
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
@@ -31,7 +34,9 @@ print(f"Validation dataset size: {len(val_dataset)} samples")
 print(f"Train dataloader size: {len(train_dataloader)} batches")
 print(f"Validation dataloader size: {len(val_dataloader)} batches")
 
-# Model
+# ==========================
+# 2. Model
+# ==========================
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 swinunetr = SwinUNETREncoder(
     img_size=(224, 224),
@@ -52,7 +57,9 @@ swinunetrv2 = SwinUNETREncoder(
 
 encoder = swinunetr
 
-# Loss and Optimizer
+# ==========================
+# 3. Loss and Optimizer
+# ==========================
 criterion = ContrastiveLoss(temperature=0.07, mae_weight=1.0, nce_weight=1.0).to(device)
 # criterion = ContrastiveLoss(temperature=0.07, mae_weight=1.0, nce_weight=2.0).to(device)
 # criterion = ContrastiveLoss(temperature=0.07, mae_weight=1.0, nce_weight=0.5).to(device)
@@ -68,7 +75,9 @@ best_val_loss = float("inf")
 best_epoch = -1
 for epoch in tqdm(range(num_epochs), desc="Training Epochs"):
     
-    # Training Loop
+    # ==========================
+    # 4. Training Loop
+    # ==========================
     encoder.train()
     total_loss_train = 0.0
     mae_loss_train = 0.0
@@ -124,7 +133,9 @@ for epoch in tqdm(range(num_epochs), desc="Training Epochs"):
     avg_mae_loss = mae_loss_train / len(train_dataloader.dataset)
     avg_nce_loss = nce_loss_train / len(train_dataloader.dataset)
 
-    # Validation Loop
+    # ==========================
+    # 5. Validation Loop
+    # ==========================
     encoder.eval()
     total_loss_val = 0.0
     mae_loss_val = 0.0
@@ -190,7 +201,9 @@ for epoch in tqdm(range(num_epochs), desc="Training Epochs"):
     avg_mae_val_loss = mae_loss_val / len(val_dataloader.dataset)
     avg_nce_val_loss = nce_loss_val / len(val_dataloader.dataset)
 
-    # Log to TensorBoard
+    # ==========================
+    # 6. Log to TensorBoard
+    # ==========================
     writer.add_scalars("Loss/Total_Loss", {
         "Train": avg_train_loss,
         "Validation": avg_val_loss,
